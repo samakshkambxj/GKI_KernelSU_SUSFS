@@ -34,6 +34,7 @@ import sys
 RID_BY_LABEL = {
     "KernelSU-Next": "next",
     "KernelSU": "kernelsu",
+    "OriginSU": "originsu",
     "BakaSU": "bakasu",
     "SukiSU-Ultra": "sukisu-ultra",
     "KowSU": "kowsu",

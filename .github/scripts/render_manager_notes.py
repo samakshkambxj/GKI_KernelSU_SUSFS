@@ -9,17 +9,21 @@ commits = {
     "BakaSU": env("BAKASU_COMMIT") or "latest tip",
     "SukiSU-Ultra": env("SUKISU_ULTRA_COMMIT") or "latest tip",
     "FinaSU": env("FINASU_COMMIT") or "latest tip",
+    "OriginSU": env("ORIGINSU_COMMIT") or "latest legacy tip",
     "KowSU": "latest tip",
     "KernelSU-Next-SUSFS": env("NEXT_SUSFS_COMMIT") or "latest dev-susfs tip",
 }
 # enrich from fetch path manager_list (pure commit info, same style as prebuilt)
 raw = env("MANAGER_LIST_FETCH")
+release_sourced = False
 if raw:
     try:
         for m in json.loads(raw):
-            label = {"next":"KernelSU-Next","kernelsu":"KernelSU","bakasu":"BakaSU","sukisu-ultra":"SukiSU-Ultra","finasu":"FinaSU","kowsu":"KowSU","next-susfs":"KernelSU-Next-SUSFS"}.get(m.get("flavor",""), "")
+            label = {"next":"KernelSU-Next","kernelsu":"KernelSU","originsu":"OriginSU","bakasu":"BakaSU","sukisu-ultra":"SukiSU-Ultra","finasu":"FinaSU","kowsu":"KowSU","next-susfs":"KernelSU-Next-SUSFS"}.get(m.get("flavor",""), "")
             if label and m.get("stock"):
                 commits[label] = m["stock"]
+            if m.get("source") == "release":
+                release_sourced = True
     except: pass
 lines = []
 lines.append("# Managers — Release Notes Preview")
@@ -27,10 +31,15 @@ lines.append("")
 lines.append("## Features")
 lines.append("")
 if root == "All":
-    lines.append("- All manager flavors (KernelSU-Next, KernelSU, BakaSU, SukiSU-Ultra, FinaSU, KernelSU-Next-SUSFS)")
+    lines.append("- All manager flavors (KernelSU-Next, KernelSU, BakaSU, SukiSU-Ultra, FinaSU, OriginSU, KernelSU-Next-SUSFS)")
 else:
     lines.append(f"- {root}")
-lines.append(f"- {'Built from source' if src else 'Fetched prebuilt (upstream CI)'}")
+if src:
+    lines.append("- Built from source")
+elif release_sourced:
+    lines.append("- Fetched prebuilt (upstream release)")
+else:
+    lines.append("- Fetched prebuilt (upstream CI)")
 lines.append("")
 lines.append("## Commits")
 lines.append("")

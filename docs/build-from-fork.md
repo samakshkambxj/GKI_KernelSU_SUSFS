@@ -74,11 +74,11 @@ Recommended settings for a first build:
 | OS patch level | One unique date or `lts` | Selects one matrix row. A numeric sublevel can match multiple dates. |
 | Kernel Branding | Your short brand name | Changes the kernel's local version string. |
 | Commit mode | `verified` | Uses the project's verified component pins where pins are supported. |
-| Root Flavor | One implementation | Produces one kernel instead of KernelSU-Next, KernelSU, and BakaSU builds. `SukiSU-Ultra`, `KowSU`, `FinaSU`, and `No Root` are opt-in only and are not part of `All`. `KowSU` cannot be combined with SUSFS; `FinaSU` requires SUSFS. |
+| Root Flavor | One implementation | Produces one kernel instead of KernelSU-Next, KernelSU, and BakaSU builds. `OriginSU` is the dispatch default. `SukiSU-Ultra`, `KowSU`, `FinaSU`, `OriginSU`, and `No Root` are opt-in only and are not part of `All`. `KowSU` cannot be combined with SUSFS; `FinaSU` and `OriginSU` require SUSFS. |
 | Feature toggles | Keep the defaults initially | Establishes a known baseline before customizing features. |
 | Test release notes | `false` | `true` skips the kernel builds and only previews release notes. |
 
-Root Flavor choices are `KernelSU-Next`, `KernelSU`, `BakaSU`, `SukiSU-Ultra`, `KowSU`, `FinaSU`, `No Root`, or `All`. `All` builds only KernelSU-Next, KernelSU, and BakaSU. `KowSU` always tracks the latest `master` tip and errors out if SUSFS is enabled. `FinaSU` is pinned in verified mode and errors out if SUSFS is disabled (its kernel hard-depends on the susfs headers). `No Root` produces a kernel with no root implementation (and no manager APK). Install the matching manager after flashing a rooted build; see [Post-install Setup](post-install.md).
+Root Flavor choices are `OriginSU`, `KernelSU-Next`, `KernelSU`, `BakaSU`, `SukiSU-Ultra`, `KowSU`, `FinaSU`, `No Root`, or `All`. `OriginSU` is the default and follows its `legacy` branch. `All` builds only KernelSU-Next, KernelSU, and BakaSU. `KowSU` always tracks the latest `master` tip and errors out if SUSFS is enabled. `FinaSU` and `OriginSU` are pinned in verified mode and error out if SUSFS is disabled (their kernels hard-depend on the susfs headers). `OriginSU` additionally enables all of its own kernel features (KPM, Origin Veil, multi-manager, toolkit) and defaults every build feature to on. `No Root` produces a kernel with no root implementation (and no manager APK). Install the matching manager after flashing a rooted build; see [Post-install Setup](post-install.md).
 
 ### Example: Current Android 15 / Linux 6.6 LTS
 

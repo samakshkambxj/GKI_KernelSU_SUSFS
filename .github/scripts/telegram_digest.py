@@ -88,6 +88,7 @@ RICH_MAX_LEN = 32000  # Bot API 10.x rich message cap is ~32768
 ROOT_URLS = {
     "next": "https://github.com/pershoot/KernelSU-Next/commit/",
     "kernelsu": "https://github.com/tiann/KernelSU/commit/",
+    "originsu": "https://github.com/samakshkambxj/OriginSU/commit/",
     "bakasu": "https://github.com/Baka-SU/BakaSU/commit/",
     "sukisu-ultra": "https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/",
     "kowsu": "https://github.com/KOWX712/KernelSU/commit/",
@@ -107,13 +108,17 @@ FLAVOR_MANAGERS = {
     # history has ever carried a spoofed artifact. One pattern, one link -
     # a BakaSU_v*spoofed* entry here would silently match nothing.
     "BakaSU": [("BakaSU_v*", None)],
+    # OriginSU publishes universal + per-ABI release APKs; the universal one
+    # is the single manager its release ships (no spoofed variant).
+    "OriginSU": [("OriginSU_v*universal*", None),
+                 ("OriginSU_v*", None)],
 }
 
 # Manager-link flavor order (user request 2026-10-13): KernelSU first, then
 # KernelSU-Next with its trailing spoofed link, then BakaSU with its spoofed.
 # Any other flavor keeps alphabetical order after these.
 MANAGER_FLAVOR_ORDER = ["KernelSU", "KernelSU-Next", "BakaSU",
-                        "SukiSU-Ultra", "KowSU"]
+                        "SukiSU-Ultra", "KowSU", "OriginSU"]
 
 
 def ordered_manager_flavors(flavors) -> list:
@@ -314,7 +319,7 @@ def main() -> int:
         # Per-(sublevel, flavor) artifact links: every root flavor that
         # built a sublevel gets its own link (a KernelSU-Next + BakaSU
         # dispatch produces two kernels per version - both link).
-        FLAVOR_ORDER = ["KernelSU-Next", "KernelSU", "BakaSU",
+        FLAVOR_ORDER = ["OriginSU", "KernelSU-Next", "KernelSU", "BakaSU",
                         "SukiSU-Ultra", "KowSU"]
         flav_order = [f for f in FLAVOR_ORDER if f in e["flavors"]] + \
                      sorted(f for f in e["flavors"] if f not in FLAVOR_ORDER)
@@ -404,7 +409,7 @@ def main() -> int:
         # family, each with its manager-repo commit link - 1:1 with the
         # release notes' per-flavor Root lines.
         root_line = ""
-        roots_sorted = [r for r in ("next", "kernelsu", "bakasu",
+        roots_sorted = [r for r in ("originsu", "next", "kernelsu", "bakasu",
                                     "sukisu-ultra", "kowsu") if r in e["roots"]]
         roots_sorted += [r for r in sorted(e["roots"]) if r not in roots_sorted]
         rlines = []

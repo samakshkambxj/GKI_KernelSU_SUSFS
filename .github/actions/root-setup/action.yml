@@ -2,7 +2,7 @@ name: Setup pinned root implementation
 description: Clone exactly one supported root implementation at a verified commit
 inputs:
   flavor:
-    description: "kernelsu, next, bakasu, finasu, sukisu-ultra, or kowsu"
+    description: "kernelsu, next, originsu, bakasu, finasu, sukisu-ultra, or kowsu"
     required: true
   commit:
     description: 'Full immutable commit SHA'
@@ -29,6 +29,11 @@ runs:
             repo="https://github.com/KernelSU-Next/KernelSU-Next.git"
             directory="KernelSU-Next"
             manager="KernelSU Next Manager"
+            ;;
+          originsu)
+            repo="https://github.com/samakshkambxj/OriginSU.git"
+            directory="OriginSU"
+            manager="OriginSU Manager"
             ;;
           bakasu)
             repo="https://github.com/Baka-SU/BakaSU.git"
@@ -61,7 +66,7 @@ runs:
           exit 2
         fi
 
-        for candidate in KernelSU KernelSU-Next BakaSU FinaSU SukiSU-Ultra KowSU; do
+        for candidate in KernelSU KernelSU-Next OriginSU BakaSU FinaSU SukiSU-Ultra KowSU; do
           if [ "$candidate" != "$directory" ] && [ -e "$candidate" ]; then
             echo "Refusing mixed root implementations: found $candidate." >&2
             exit 1
@@ -114,6 +119,7 @@ runs:
         fi
         case "$flavor" in
           next)     upstream_branch="dev" ;;
+          originsu) upstream_branch="legacy" ;;
           kowsu)    upstream_branch="master" ;;
           finasu)   upstream_branch="master" ;;
           *)        upstream_branch="main" ;;
@@ -138,6 +144,27 @@ runs:
             echo "KSU_VERSION_TAG := \"$ksu_tag\""
           } >> "$kbuild"
           echo "[+] pinned KSU_VERSION=${ksu_version} / tag ${ksu_tag} in $kbuild"
+        fi
+        # OriginSU (ReSukiSU lineage) derives KSU_VERSION from
+        # `git rev-list --count HEAD` inside the checkout, and hard-errors when
+        # `$(KSU_SRC)/../.git` is missing. Kleaf's sandbox sees the symlinked
+        # kernel/ tree but not that .git, so the submodule stop and the empty
+        # `expr 30000 + + 700` would break the build (same failure BakaSU hit).
+        # Keep the count as a literal fallback and demote the stop to a warning;
+        # both are no-ops when git metadata is visible.
+        if [ "$flavor" = "originsu" ] && [ -f "$kbuild" ]; then
+          if grep -q '^KSU_LOCAL_VERSION := ' "$kbuild"; then
+            sed -i "s|^KSU_LOCAL_VERSION := .*$|KSU_LOCAL_VERSION := \$(or \$(shell cd \$(KSU_SRC); \$(GIT_BIN) rev-list --count HEAD),$ksu_count)|" "$kbuild"
+            echo "[+] pinned KSU_LOCAL_VERSION fallback ${ksu_count} in $kbuild"
+          fi
+          # The tag/sha/branch probes have git-less defaults ("v4.1.0",
+          # "unknown", "unknown"), which is what a sandboxed build would print
+          # in the manager. We know all three from the pinned checkout.
+          sed -i "s|^KSU_TAG_NAME[[:space:]]*:= .*|KSU_TAG_NAME    := ${ksu_tag}|" "$kbuild"
+          sed -i "s|^KSU_COMMIT_SHA[[:space:]]*:= .*|KSU_COMMIT_SHA  := ${actual_commit:0:8}|" "$kbuild"
+          sed -i "s|^KSU_BRANCH_NAME[[:space:]]*:= .*|KSU_BRANCH_NAME := legacy|" "$kbuild"
+          sed -i 's/$(error You should use $(REPO_NAME) as a git submodule instead of copying code directly)/$(warning You should use $(REPO_NAME) as a git submodule instead of copying code directly)/' "$kbuild"
+          echo "[+] demoted OriginSU submodule check to a warning in $kbuild"
         fi
         if [ ! -f "$directory/kernel/Kconfig" ] || [ ! -f "$directory/kernel/Makefile" ]; then
           echo "Selected root checkout does not contain a kernel integration." >&2

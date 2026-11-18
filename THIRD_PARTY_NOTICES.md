@@ -6,6 +6,7 @@
 | Component | Upstream | License |
 |-----------|----------|---------|
 | Kernel Source | [kernel/common](https://android.googlesource.com/kernel/common) | GPL-2.0 |
+| OriginSU | [samakshkambxj/OriginSU](https://github.com/samakshkambxj/OriginSU) | GPL-3.0 |
 | KernelSU | [tiann/KernelSU](https://github.com/tiann/KernelSU) | GPL-3.0 |
 | KernelSU-Next | [KernelSU-Next/KernelSU-Next](https://github.com/KernelSU-Next/KernelSU-Next) | GPL-3.0 |
 | ReSukiSU | [ReSukiSU/ReSukiSU](https://github.com/ReSukiSU/ReSukiSU) | GPL-3.0 |

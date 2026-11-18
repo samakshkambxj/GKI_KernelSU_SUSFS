@@ -32,6 +32,7 @@ NOT_SET = re.compile(r"^(?:# CONFIG_[A-Za-z0-9_]+ is not set|CONFIG_[A-Za-z0-9_]
 KSU_CHECKOUTS = (
     "KernelSU",
     "KernelSU-Next",
+    "OriginSU",
     "BakaSU",
     "SukiSU-Ultra",
     "KowSU",

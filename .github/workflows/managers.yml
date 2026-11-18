@@ -12,6 +12,7 @@ on:
         type: choice
         options:
           - All
+          - OriginSU
           - KernelSU-Next
           - KernelSU
           - BakaSU
@@ -43,6 +44,11 @@ on:
         default: ""
       finasu_commit:
         description: "Pin FinaSU manager to this commit (40-char SHA, empty = latest master tip)"
+        required: false
+        type: string
+        default: ""
+      originsu_commit:
+        description: "Record OriginSU at this commit (40-char SHA, empty = latest legacy tip). Its manager always comes from the latest GitHub release."
         required: false
         type: string
         default: ""
@@ -88,6 +94,11 @@ on:
         required: false
         type: string
         default: ""
+      originsu_commit:
+        description: "Record OriginSU commit (its manager comes from the latest release)"
+        required: false
+        type: string
+        default: ""
       kernelsu_next_susfs_commit:
         description: "Pin KernelSU-Next SUSFS manager commit"
         required: false
@@ -124,6 +135,7 @@ jobs:
           bakasu_commit: ${{ inputs.bakasu_commit }}
           sukisu_ultra_commit: ${{ inputs.sukisu_ultra_commit }}
           finasu_commit: ${{ inputs.finasu_commit }}
+          originsu_commit: ${{ inputs.originsu_commit }}
 
   list-manager-apks:
     needs: resolve-managers
@@ -176,6 +188,9 @@ jobs:
           - flavor: kowsu
             repo: https://github.com/KOWX712/KernelSU.git
             ref: master
+          - flavor: originsu
+            repo: https://github.com/samakshkambxj/OriginSU.git
+            ref: legacy
     steps:
       - name: Gate on root_flavor filter
         id: gate
@@ -194,6 +209,7 @@ jobs:
             SukiSU-Ultra) [[ "$FLAVOR" == "sukisu-ultra" ]] && echo "run=true" >> "$GITHUB_OUTPUT" || echo "run=false" >> "$GITHUB_OUTPUT" ;;
             KowSU) [[ "$FLAVOR" == "kowsu" ]] && echo "run=true" >> "$GITHUB_OUTPUT" || echo "run=false" >> "$GITHUB_OUTPUT" ;;
             FinaSU) [[ "$FLAVOR" == "finasu" ]] && echo "run=true" >> "$GITHUB_OUTPUT" || echo "run=false" >> "$GITHUB_OUTPUT" ;;
+            OriginSU) [[ "$FLAVOR" == "originsu" ]] && echo "run=true" >> "$GITHUB_OUTPUT" || echo "run=false" >> "$GITHUB_OUTPUT" ;;
             *) echo "run=false" >> "$GITHUB_OUTPUT" ;;
           esac
 
@@ -208,6 +224,7 @@ jobs:
           BAKASU_COMMIT: ${{ inputs.bakasu_commit }}
           SUKISU_ULTRA_COMMIT: ${{ inputs.sukisu_ultra_commit }}
           FINASU_COMMIT: ${{ inputs.finasu_commit }}
+          ORIGINSU_COMMIT: ${{ inputs.originsu_commit }}
         run: |
           set -euo pipefail
           flavor="${{ matrix.flavor }}"
@@ -219,6 +236,7 @@ jobs:
             sukisu-ultra) pin="$SUKISU_ULTRA_COMMIT" ;;
             kowsu) pin="" ;;
             finasu) pin="$FINASU_COMMIT" ;;
+            originsu) pin="$ORIGINSU_COMMIT" ;;
           esac
           if [[ -n "${pin:-}" ]]; then
             echo "sha=$pin" >> "$GITHUB_OUTPUT"
@@ -360,6 +378,9 @@ jobs:
           - flavor: kowsu
             repo: https://github.com/KOWX712/KernelSU.git
             ref: master
+          - flavor: originsu
+            repo: https://github.com/samakshkambxj/OriginSU.git
+            ref: legacy
           - flavor: next-susfs
             repo: https://github.com/pershoot/KernelSU-Next.git
             ref: dev-susfs
@@ -383,6 +404,7 @@ jobs:
             SukiSU-Ultra) [[ "$FLAVOR" == "sukisu-ultra" ]] && echo "run=true" >> "$GITHUB_OUTPUT" || echo "run=false" >> "$GITHUB_OUTPUT" ;;
             KowSU) [[ "$FLAVOR" == "kowsu" ]] && echo "run=true" >> "$GITHUB_OUTPUT" || echo "run=false" >> "$GITHUB_OUTPUT" ;;
             FinaSU) [[ "$FLAVOR" == "finasu" ]] && echo "run=true" >> "$GITHUB_OUTPUT" || echo "run=false" >> "$GITHUB_OUTPUT" ;;
+            OriginSU) [[ "$FLAVOR" == "originsu" ]] && echo "run=true" >> "$GITHUB_OUTPUT" || echo "run=false" >> "$GITHUB_OUTPUT" ;;
             *) echo "run=false" >> "$GITHUB_OUTPUT" ;;
           esac
           cat "$GITHUB_OUTPUT"
@@ -398,6 +420,7 @@ jobs:
           BAKASU_COMMIT: ${{ inputs.bakasu_commit }}
           SUKISU_ULTRA_COMMIT: ${{ inputs.sukisu_ultra_commit }}
           FINASU_COMMIT: ${{ inputs.finasu_commit }}
+          ORIGINSU_COMMIT: ${{ inputs.originsu_commit }}
         run: |
           set -euo pipefail
           flavor="${{ matrix.flavor }}"
@@ -409,6 +432,7 @@ jobs:
             sukisu-ultra) pin="$SUKISU_ULTRA_COMMIT" ;;
             kowsu) pin="" ;;
             finasu) pin="$FINASU_COMMIT" ;;
+            originsu) pin="$ORIGINSU_COMMIT" ;;
           esac
           if [[ -n "${pin:-}" ]]; then
             if ! [[ "$pin" =~ ^[0-9a-f]{40}$ ]]; then
@@ -537,6 +561,10 @@ jobs:
           FINASU_KEYSTORE_PASSWORD: ${{ secrets.FINASU_KEYSTORE_PASSWORD }}
           FINASU_KEY_ALIAS: ${{ secrets.FINASU_KEY_ALIAS }}
           FINASU_KEY_PASSWORD: ${{ secrets.FINASU_KEY_PASSWORD }}
+          ORIGINSU_KEYSTORE: ${{ secrets.ORIGINSU_KEYSTORE }}
+          ORIGINSU_KEYSTORE_PASSWORD: ${{ secrets.ORIGINSU_KEYSTORE_PASSWORD }}
+          ORIGINSU_KEY_ALIAS: ${{ secrets.ORIGINSU_KEY_ALIAS }}
+          ORIGINSU_KEY_PASSWORD: ${{ secrets.ORIGINSU_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           dir="$SRC_DIR"
@@ -556,6 +584,7 @@ jobs:
               bakasu) b64="${BAKASU_KEYSTORE:-}"; pw="${BAKASU_KEYSTORE_PASSWORD:-}"; alias="${BAKASU_KEY_ALIAS:-}"; kp="${BAKASU_KEY_PASSWORD:-}" ;;
               sukisu-ultra) b64="${SUKISU_ULTRA_KEYSTORE:-}"; pw="${SUKISU_ULTRA_KEYSTORE_PASSWORD:-}"; alias="${SUKISU_ULTRA_KEY_ALIAS:-}"; kp="${SUKISU_ULTRA_KEY_PASSWORD:-}" ;;
               finasu) b64="${FINASU_KEYSTORE:-}"; pw="${FINASU_KEYSTORE_PASSWORD:-}"; alias="${FINASU_KEY_ALIAS:-}"; kp="${FINASU_KEY_PASSWORD:-}" ;;
+              originsu) b64="${ORIGINSU_KEYSTORE:-}"; pw="${ORIGINSU_KEYSTORE_PASSWORD:-}"; alias="${ORIGINSU_KEY_ALIAS:-}"; kp="${ORIGINSU_KEY_PASSWORD:-}" ;;
             esac
             if [ -n "${b64:-}" ] && [ -n "${pw:-}" ] && [ -n "${alias:-}" ]; then
               echo "Using your persistent key for $flavor (alias=$alias)"
@@ -632,6 +661,9 @@ jobs:
             fi
           elif [ "$flavor" = "finasu" ]; then
             # Upstream FinaSU (tiann-style): clean assembleRelease
+            gradle_build "clean assembleRelease" || gradle_build "assembleRelease" || true
+          elif [ "$flavor" = "originsu" ]; then
+            # OriginSU legacy (tiann-style): clean assembleRelease
             gradle_build "clean assembleRelease" || gradle_build "assembleRelease" || true
           elif [ "$flavor" = "sukisu-ultra" ]; then
             # Upstream SukiSU-Ultra: clean assembleRelease, spoofed via randomizer
@@ -799,6 +831,7 @@ jobs:
           BAKASU_COMMIT: ${{ inputs.bakasu_commit }}
           SUKISU_ULTRA_COMMIT: ${{ inputs.sukisu_ultra_commit }}
           FINASU_COMMIT: ${{ inputs.finasu_commit }}
+          ORIGINSU_COMMIT: ${{ inputs.originsu_commit }}
           NEXT_SUSFS_COMMIT: ${{ inputs.kernelsu_next_susfs_commit }}
           MANAGER_LIST_FETCH: ${{ needs.resolve-managers.outputs.manager_list }}
 

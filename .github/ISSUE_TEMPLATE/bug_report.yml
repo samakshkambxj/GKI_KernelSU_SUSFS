@@ -48,6 +48,7 @@ body:
         label: Manager
         description: Which KernelSU manager you're using
         options:
+          - OriginSU
           - Wild KSU
           - KernelSU Next
           - KernelSU

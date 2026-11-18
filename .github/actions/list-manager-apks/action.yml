@@ -31,7 +31,9 @@ runs:
         rm -rf "$OUT_APKS" "$MANIFEST"
         mkdir -p "$OUT_APKS"
         : > "$MANIFEST"
-        echo "$MANAGER_LIST" | jq -c '.[] | select(.run_id != null and .run_id != "null")' | while read -r M; do
+        # Release-sourced records (OriginSU) have run_id null on purpose: they
+        # are downloaded from /releases/latest, not from an Actions run.
+        echo "$MANAGER_LIST" | jq -c '.[] | select(.source == "release" or (.run_id != null and .run_id != "null"))' | while read -r M; do
           OWNER=$(echo "$M" | jq -r .owner)
           REPO=$(echo "$M" | jq -r .repo)
           SRC=$(echo "$M" | jq -r .source)

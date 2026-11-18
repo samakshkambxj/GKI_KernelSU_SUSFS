@@ -177,12 +177,14 @@ jobs:
       - name: Reject incompatible root/SUSFS combinations
         # One step for both: these are a single guard, and splitting them only
         # added two composite actions whose whole body was one echo.
-        if: (inputs.root_flavor == 'kowsu' && (contains(inputs.feature_set, 'SUSFS') || inputs.feature_set == 'All')) || (inputs.root_flavor == 'finasu' && !contains(inputs.feature_set, 'SUSFS'))
+        if: (inputs.root_flavor == 'kowsu' && (contains(inputs.feature_set, 'SUSFS') || inputs.feature_set == 'All')) || (inputs.root_flavor == 'finasu' && !contains(inputs.feature_set, 'SUSFS')) || (inputs.root_flavor == 'originsu' && !contains(inputs.feature_set, 'SUSFS'))
         shell: bash
         run: |
           set -euo pipefail
           if [ "${{ inputs.root_flavor }}" = "kowsu" ]; then
             echo "ERROR: KowSU does not work together with SUSFS - re-run with SUSFS off." >&2
+          elif [ "${{ inputs.root_flavor }}" = "originsu" ]; then
+            echo "ERROR: OriginSU requires SUSFS - re-run with SUSFS on." >&2
           else
             echo "ERROR: FinaSU requires SUSFS - re-run with SUSFS on." >&2
           fi
@@ -244,6 +246,18 @@ jobs:
           python3 "${{ github.workspace }}/.github/scripts/append_fragment.py" \
             "${{ github.workspace }}/.github/fragments/single-manager-for-finasu-dynamic-manager-off.fragment" \
             --dest wild_defconfig.fragment --label single-manager-for-finasu-dynamic-manager-off
+      - name: Enable all OriginSU kernel features
+        # OriginSU ships KPM, Origin Veil, multi-manager and toolkit support as
+        # opt-in Kconfig symbols; its SUSFS is inline (CONFIG_KSU_SUSFS) and
+        # still consumes the simonpunk kernel patches applied by the SUSFS step
+        # below, so it is only added when SUSFS is on (guarded above).
+        if: inputs.root_flavor == 'originsu' && contains(inputs.feature_set, 'SUSFS')
+        shell: bash
+        working-directory: ${{ github.workspace }}/kernel/common
+        run: |
+          python3 "${{ github.workspace }}/.github/scripts/append_fragment.py" \
+            "${{ github.workspace }}/.github/fragments/enable-all-features-for-originsu.fragment" \
+            --dest wild_defconfig.fragment --label enable-all-features-for-originsu
       - name: SUSFS
         # One step, one action: resolve the SUSFS commit, apply it for the
         # selected root, then run the post-patch fixes (ksu_close_fd restore,

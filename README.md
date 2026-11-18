@@ -20,7 +20,7 @@ Generic kernels built on [Google's GKI sources](https://android.googlesource.com
 
 ## Features
 
-- **KernelSU / KernelSU-Next / BakaSU / FinaSU / Suki-SU Ultra / KowSU** — root implementations
+- **OriginSU / KernelSU / KernelSU-Next / BakaSU / FinaSU / Suki-SU Ultra / KowSU** — root implementations
 - **susfs4ksu** — root hiding (incl. Ptrace Leak Fix, Unicode Fix)
 - **NoMount / Mountify** — mount metamodules
 - **Baseband Guard** — partition protection
@@ -62,6 +62,7 @@ See **[Installation Guide](https://github.com/WildKernels/GKI_KernelSU_SUSFS/wik
 
 **These amazing people and projects make this possible:**
 
+- **OriginSU** — [samakshkambxj](https://github.com/samakshkambxj/OriginSU)
 - **KernelSU** — [tiann](https://github.com/tiann/KernelSU)
 - **KernelSU-Next** — [rifsxd](https://github.com/KernelSU-Next/KernelSU-Next)
 - **KernelSU-Next SUSFS Fork** — [pershoot](https://github.com/pershoot/KernelSU-Next)

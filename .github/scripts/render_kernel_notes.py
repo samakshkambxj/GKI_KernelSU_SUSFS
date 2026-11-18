@@ -40,6 +40,7 @@ ksu_commit=env("KSU_COMMIT","")
 bakasu_commit=env("BAKASU_COMMIT","")
 sukisu_ultra_commit=env("SUKISU_ULTRA_COMMIT","")
 finasu_commit=env("FINASU_COMMIT","")
+originsu_commit=env("ORIGINSU_COMMIT","")
 kowsu_commit=env("KOWSU_COMMIT","")
 kernelsu_commit=env("KERNELSU_COMMIT","")
 nm=env("NOMOUNT_COMMIT","")
@@ -54,12 +55,12 @@ if env("USE_SUSFS","true")=="true":
     _next_url="https://github.com/pershoot/KernelSU-Next/commit/"
 else:
     _next_url="https://github.com/KernelSU-Next/KernelSU-Next/commit/"
-_root_urls={"next":_next_url,"kernelsu":"https://github.com/tiann/KernelSU/commit/","bakasu":"https://github.com/Baka-SU/BakaSU/commit/","sukisu-ultra":"https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/","finasu":"https://github.com/LyraVoid/FinaSU/commit/","kowsu":"https://github.com/KOWX712/KernelSU/commit/"}
-_root_commits={"next":_rmatrix.get("next","") or kernelsu_commit,"kernelsu":_rmatrix.get("kernelsu","") or ksu_commit,"bakasu":_rmatrix.get("bakasu","") or bakasu_commit,"sukisu-ultra":_rmatrix.get("sukisu-ultra","") or sukisu_ultra_commit,"finasu":_rmatrix.get("finasu","") or finasu_commit,"kowsu":_rmatrix.get("kowsu","") or kowsu_commit}
+_root_urls={"next":_next_url,"kernelsu":"https://github.com/tiann/KernelSU/commit/","originsu":"https://github.com/samakshkambxj/OriginSU/commit/","bakasu":"https://github.com/Baka-SU/BakaSU/commit/","sukisu-ultra":"https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/","finasu":"https://github.com/LyraVoid/FinaSU/commit/","kowsu":"https://github.com/KOWX712/KernelSU/commit/"}
+_root_commits={"next":_rmatrix.get("next","") or kernelsu_commit,"kernelsu":_rmatrix.get("kernelsu","") or ksu_commit,"originsu":_rmatrix.get("originsu","") or originsu_commit,"bakasu":_rmatrix.get("bakasu","") or bakasu_commit,"sukisu-ultra":_rmatrix.get("sukisu-ultra","") or sukisu_ultra_commit,"finasu":_rmatrix.get("finasu","") or finasu_commit,"kowsu":_rmatrix.get("kowsu","") or kowsu_commit}
 _flavors0=[m.get("flavor","") for m in parse_managers(env("MANAGER_LIST","")) if m.get("flavor","")]
 if not _flavors0:
-    _flavors0={"KernelSU-Next":["next"],"KernelSU":["kernelsu"],"BakaSU":["bakasu"],"SukiSU-Ultra":["sukisu-ultra"],"FinaSU":["finasu"],"KowSU":["kowsu"],"No Root":[],"All":["next","kernelsu","bakasu"]}.get(root,["next","kernelsu","bakasu"])
-_labels0={"next":"KernelSU-Next","kernelsu":"KernelSU","bakasu":"BakaSU","sukisu-ultra":"SukiSU-Ultra","finasu":"FinaSU","kowsu":"KowSU"}
+    _flavors0={"OriginSU":["originsu"],"KernelSU-Next":["next"],"KernelSU":["kernelsu"],"BakaSU":["bakasu"],"SukiSU-Ultra":["sukisu-ultra"],"FinaSU":["finasu"],"KowSU":["kowsu"],"No Root":[],"All":["next","kernelsu","bakasu"]}.get(root,["next","kernelsu","bakasu"])
+_labels0={"next":"KernelSU-Next","kernelsu":"KernelSU","originsu":"OriginSU","bakasu":"BakaSU","sukisu-ultra":"SukiSU-Ultra","finasu":"FinaSU","kowsu":"KowSU"}
 # Manager version numbers. tiann/KernelSU and its descendants (KernelSU-Next,
 # BakaSU) do not store a version string: the manager computes
 #   version = 30000 + <commits in the repo>
@@ -165,8 +166,8 @@ sus_map_bakasu={"android12-5.10":env("SUSFS_ANDROID12_5_10_BAKASU",""),"android1
 sus_map_sukisu_ultra={"android12-5.10":env("SUSFS_ANDROID12_5_10_SUKISU_ULTRA",""),"android13-5.10":env("SUSFS_ANDROID13_5_10_SUKISU_ULTRA",""),"android13-5.15":env("SUSFS_ANDROID13_5_15_SUKISU_ULTRA",""),"android14-5.15":env("SUSFS_ANDROID14_5_15_SUKISU_ULTRA",""),"android14-6.1":env("SUSFS_ANDROID14_6_1_SUKISU_ULTRA",""),"android15-6.6":env("SUSFS_ANDROID15_6_6_SUKISU_ULTRA",""),"android16-6.12":env("SUSFS_ANDROID16_6_12_SUKISU_ULTRA","")}
 _flavors=[m.get("flavor","") for m in parse_managers(env("MANAGER_LIST","")) if m.get("flavor","")]
 if not _flavors:
-    _flavors={"KernelSU-Next":["next"],"KernelSU":["kernelsu"],"BakaSU":["bakasu"],"SukiSU-Ultra":["sukisu-ultra"],"KowSU":["kowsu"],"No Root":[],"All":["next","kernelsu","bakasu"]}.get(root,["next","kernelsu","bakasu"])
-_labels={"next":"KernelSU-Next","kernelsu":"KernelSU","bakasu":"BakaSU","sukisu-ultra":"SukiSU-Ultra","kowsu":"KowSU"}
+    _flavors={"OriginSU":["originsu"],"KernelSU-Next":["next"],"KernelSU":["kernelsu"],"BakaSU":["bakasu"],"SukiSU-Ultra":["sukisu-ultra"],"KowSU":["kowsu"],"No Root":[],"All":["next","kernelsu","bakasu"]}.get(root,["next","kernelsu","bakasu"])
+_labels={"next":"KernelSU-Next","kernelsu":"KernelSU","originsu":"OriginSU","bakasu":"BakaSU","sukisu-ultra":"SukiSU-Ultra","kowsu":"KowSU"}
 _susfs_url="https://gitlab.com/simonpunk/susfs4ksu"
 # SUSFS owns its own version string: kernel_patches/include/linux/susfs.h carries
 #   #define SUSFS_VERSION "v2.4.0"
